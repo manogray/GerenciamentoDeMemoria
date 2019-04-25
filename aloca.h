@@ -1,14 +1,17 @@
-#define BESTFIT 0
-#define FIRSTFIT 1
-
-//TAMANHO MÁXIMO DE ALOCACAO: 65535 (maior unsigned short)
+#include <stdlib.h>
+#include <stdio.h>
 
 class meualoc{
 	char* memoria; //char* pois eh byte a byte
+    int politicaMem;
 	public:
 		//tamanhoMemoria vai definir o tamanho da memória que o alocador vai utilizar
 		//politicaMem define como escolher o bloco de onde saira a memória
-		meualoc(int tamanhoMemoria,int politicaMem);
+		meualoc(int tamanhoMemoria,int politicaMem){
+            this->memoria = (char*) malloc(sizeof(char)*tamanhoMemoria);
+            this->politicaMem = politicaMem;
+            printf("Instancia criada!");
+        }
 
 		//Pega um pedaco da variavel memoria e aloca, retornando o ponteiro para o comeco dessa regiao e atualizando a lista de livres.
 		char *aloca(unsigned short int tamanho);
