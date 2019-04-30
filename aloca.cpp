@@ -1,4 +1,5 @@
 #include "aloca.h"
+#include "encadeada.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -7,13 +8,17 @@ using namespace std;
 
 int main(){
 
-    meualoc *aloc1 = new meualoc(200,10);
+    Encadeada* listaEncadeada = new Encadeada();
 
-    aloc1->imprimePolitica();
+    char letra = 'c';
 
-    aloc1->~meualoc();
+    Elemento* element = new Elemento(&letra,10);
 
-    aloc1->imprimePolitica();
+    listaEncadeada->inserir(element);
+
+    listaEncadeada->inserir(element);
+
+    listaEncadeada->inserir(element);
 
     return 0;
 }

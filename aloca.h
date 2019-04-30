@@ -33,7 +33,7 @@ meualoc::meualoc(int tamanhoMemoria, int politicMem){
 
 meualoc::~meualoc(){
 	delete[] memoria;
-	politicaMem = NULL;
+	politicaMem = -1;
 	printf("Objeto destruido!\n");
 }
 
