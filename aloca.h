@@ -7,11 +7,7 @@ class meualoc{
 	public:
 		//tamanhoMemoria vai definir o tamanho da memória que o alocador vai utilizar
 		//politicaMem define como escolher o bloco de onde saira a memória
-		meualoc(int tamanhoMemoria,int politicaMem){
-            this->memoria = (char*) malloc(sizeof(char)*tamanhoMemoria);
-            this->politicaMem = politicaMem;
-            printf("Instancia criada!");
-        }
+		meualoc(int tamanhoMemoria,int politicaMem);
 
 		//Pega um pedaco da variavel memoria e aloca, retornando o ponteiro para o comeco dessa regiao e atualizando a lista de livres.
 		char *aloca(unsigned short int tamanho);
@@ -25,5 +21,22 @@ class meualoc{
 		//Imprime o numero de elementos na lista de vazios, o maior e a media de tamanhos dos blocos vazios
 		void imprimeDados();
 
+		void imprimePolitica();
+
 		~meualoc();
 };
+
+meualoc::meualoc(int tamanhoMemoria, int politicMem){
+	memoria = (char *) malloc(sizeof(char)*tamanhoMemoria);
+	politicaMem = politicMem;
+}
+
+meualoc::~meualoc(){
+	delete[] memoria;
+	politicaMem = NULL;
+	printf("Objeto destruido!\n");
+}
+
+void meualoc::imprimePolitica(){
+	printf("aqui e a politica: %d\n",politicaMem);
+}
