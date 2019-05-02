@@ -25,7 +25,7 @@ class Encadeada{
 
         void inserir(Elemento* elem);
 
-        int buscar(Elemento* elem);
+        char* buscar(int tamanho, int opcao);
 
         int remover(Elemento* elem);
 
@@ -48,5 +48,22 @@ void Encadeada::inserir(Elemento* elem){
         printf("lista com %d elementos - inserido no inicio\n",numElementos);
         numElementos += 1;
         printf("tamanho atual: %d\n",numElementos);
+    }
+}
+
+char* Encadeada::buscar(int tamanho, int opcao){
+    if(opcao == 0){//FIRST FIT
+        Elemento* auxiliar = primeiro;
+        while(auxiliar != NULL){
+            if(auxiliar->tamanho >= (tamanho+(sizeof(char)*4))){
+                return auxiliar->addr;
+            }else {
+                auxiliar = auxiliar->proximo;
+            }
+        }
+    }
+
+    if(opcao == 1){//BEST FIT
+
     }
 }
