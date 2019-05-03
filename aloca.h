@@ -39,6 +39,9 @@ char* meualoc::aloca(unsigned short int tamanho){
 	if(politicaMem == 0){//FIRST FIT
 		return espacosVazios->buscar(tamanho,0);
 	}
+	if(politicaMem == 1){
+		return espacosVazios->buscar(tamanho,1);
+	}
 }
 
 meualoc::~meualoc(){
