@@ -58,7 +58,7 @@ void Encadeada::inserir(Elemento* elem){
 
 char* Encadeada::buscar(int tamanho, int opcao){
     if(opcao == 0){//FIRST FIT
-        Elemento* auxiliar = primeiro;
+        Elemento* auxiliar =  primeiro;
         while(auxiliar != NULL){
             if(auxiliar->tamanho >= (tamanho+(sizeof(char)*4))){
                 return auxiliar->addr;
@@ -69,6 +69,20 @@ char* Encadeada::buscar(int tamanho, int opcao){
     }
 
     if(opcao == 1){//BEST FIT
-
+        Elemento* auxiliar = primeiro;
+        Elemento* menorSpace = NULL;
+        while(auxiliar != NULL){
+            if(auxiliar->tamanho >= (tamanho+(sizeof(char)*4))){
+                if(menorSpace == NULL){
+                    menorSpace = auxiliar;
+                }else{
+                    if(auxiliar->tamanho <= menorSpace->tamanho) {
+                        menorSpace = auxiliar;
+                    }
+                }
+            }
+            auxiliar = auxiliar->proximo;
+        }
+        return menorSpace->addr;
     }
 }
