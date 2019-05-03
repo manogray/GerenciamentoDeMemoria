@@ -3,9 +3,11 @@
 
 class Elemento{
     public:
+        //ATRIBUTOS
         char* addr;
         int tamanho;
         Elemento* proximo;
+        //METODOS
         Elemento(char* ponteiro, int tam);
 
         ~Elemento();
@@ -13,14 +15,17 @@ class Elemento{
 
 Elemento::Elemento(char* ponteiro, int tam){
     addr = ponteiro;
-    tamanho = tamanho;
+    tamanho = tam;
     proximo = NULL;
 }
 
 class Encadeada{
-    Elemento* primeiro;
-    int numElementos;
     public:
+        //ATRIBUTOS
+        Elemento* primeiro;
+        
+        int numElementos;
+        //METODOS
         Encadeada();
 
         void inserir(Elemento* elem);
