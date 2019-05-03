@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "encadeada.h"
 
 class meualoc{
 	char* memoria; //char* pois eh byte a byte
     int politicaMem;
+	Encadeada* espacosVazios = new Encadeada();
 	public:
 		//tamanhoMemoria vai definir o tamanho da memória que o alocador vai utilizar
 		//politicaMem define como escolher o bloco de onde saira a memória
@@ -29,6 +31,14 @@ class meualoc{
 meualoc::meualoc(int tamanhoMemoria, int politicMem){
 	memoria = (char *) malloc(sizeof(char)*tamanhoMemoria);
 	politicaMem = politicMem;
+	//LISTA COM ESPACO TODO VAZIO
+	Elemento* blocao = new Elemento(memoria,tamanhoMemoria);
+}
+
+char* meualoc::aloca(unsigned short int tamanho){
+	if(politicaMem == 0){//FIRST FIT
+		return espacosVazios->buscar(tamanho,0);
+	}
 }
 
 meualoc::~meualoc(){
