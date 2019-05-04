@@ -5,7 +5,7 @@
 class meualoc{
 	char* memoria; //char* pois eh byte a byte
     int politicaMem;
-	Encadeada* espacosVazios = new Encadeada();
+	
 	public:
 		//tamanhoMemoria vai definir o tamanho da memória que o alocador vai utilizar
 		//politicaMem define como escolher o bloco de onde saira a memória
@@ -26,18 +26,26 @@ class meualoc{
 		void imprimePolitica();
 
 		~meualoc();
+		Encadeada* espacosVazios;
 };
 
 meualoc::meualoc(int tamanhoMemoria, int politicMem){
 	memoria = (char *) malloc(sizeof(char)*tamanhoMemoria);
 	politicaMem = politicMem;
+	espacosVazios = new Encadeada();
 	//LISTA COM ESPACO TODO VAZIO
 	Elemento* blocao = new Elemento(memoria,tamanhoMemoria);
+	espacosVazios->inserir(blocao);
+	
 }
 
 char* meualoc::aloca(unsigned short int tamanho){
+	char* retorno;
 	if(politicaMem == 0){//FIRST FIT
-		return espacosVazios->buscar(tamanho,0);
+		printf("meualocAloca - vou alocar espaco FF\n");
+		retorno = espacosVazios->buscar(tamanho,0);
+		retorno = retorno + (sizeof(char)*4);
+
 	}
 	if(politicaMem == 1){
 		return espacosVazios->buscar(tamanho,1);

@@ -46,14 +46,16 @@ void Encadeada::inserir(Elemento* elem){
     if(primeiro==NULL){
         primeiro = elem;
         numElementos += 1;
-        printf("lista vazia - inserido na cabeca\n");
+        printf("EncadeadaInserir - inserido na cabeca\n");
     }else{
         elem->proximo = primeiro;
         primeiro = elem;
-        printf("lista com %d elementos - inserido no inicio\n",numElementos);
+        printf("EncadeadaInserir - inserido no inicio\n");
         numElementos += 1;
         printf("tamanho atual: %d\n",numElementos);
     }
+
+    printf("Fim EncadeadaInserir\n");
 }
 
 char* Encadeada::buscar(int tamanho, int opcao){
@@ -61,9 +63,14 @@ char* Encadeada::buscar(int tamanho, int opcao){
         Elemento* auxiliar =  primeiro;
         while(auxiliar != NULL){
             if(auxiliar->tamanho >= (tamanho+(sizeof(char)*4))){
+                printf("EncadeadaBuscar - espaco vazio encontrado FF");
                 return auxiliar->addr;
             }else {
                 auxiliar = auxiliar->proximo;
+            }
+            if(auxiliar == NULL){
+                printf("EncadeadaBuscar - Sem espaco vazio disponivel\n");
+                return NULL;
             }
         }
     }
