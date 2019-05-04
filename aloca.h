@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include "encadeada.h"
 
+
 union Valor
 {
     uint32_t dword;
@@ -95,4 +96,23 @@ meualoc::~meualoc(){
 
 void meualoc::imprimePolitica(){
 	printf("aqui e a politica: %d\n",politicaMem);
+}
+
+int meualoc::verifica(char* ponteiro, int posicao = 0){
+	ponteiro -= 2;
+	Valor nMagic;
+	nMagic.valor = 0;
+	nMagic.byte1 = ponteiro[0];
+	nMagic.byte0 = ponteiro[1];
+	
+	if(nMagic.valor == numeroMagico){
+		ponteiro -=2;
+		Valor tamanho;
+		tamanho.valor = 0;
+		tamanho.byte1 = ponteiro[0];
+		tamanho.byte0 = ponteiro[1];
+		return tamanho.valor;
+	}else{
+		return 0;
+	}
 }
