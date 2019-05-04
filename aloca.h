@@ -1,6 +1,31 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include "encadeada.h"
+
+union Valor
+{
+    uint32_t dword;
+
+    struct
+    {
+        uint32_t valor;
+    };
+
+    struct
+    {
+        uint16_t word0;
+        uint16_t word1;
+    };
+
+    struct
+    {
+        uint8_t byte0;
+        uint8_t byte1;
+        uint8_t byte2;
+        uint8_t byte3;
+    };
+};
 
 class meualoc{
 	char* memoria; //char* pois eh byte a byte
