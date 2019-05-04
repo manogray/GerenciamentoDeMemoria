@@ -11,12 +11,14 @@ int main(){
 
     char* addr1 = memoTest->aloca(4096);
 
-    printf("Imprimindo endereço alocado : %p", addr1);
+    printf("Imprimindo endereço alocado : %p\n", addr1);
 
     char* addr2 = memoTest->aloca(5096);
 
     printf("Imprimindo endereço alocado : %p", addr2);
 
     //  TESTE DE VERIFICAÇÃO
+    printf("Teste do verifica: %d\n", memoTest->verifica(addr2));
+
     return 0;
 }

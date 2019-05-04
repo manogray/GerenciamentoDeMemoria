@@ -41,7 +41,7 @@ class meualoc{
 		char *aloca(unsigned short int tamanho);
 
 		//Verifica se a posicao dada pelo ponteiro esta alocada (checar se ponteiro[posicao] eh valido). Retorna o tamanho se estiver e 0 se nao
-		int verifica(char* ponteiro,int posicao=0);
+		int verifica(char* ponteiro);
 		
 		//Libera o espaco ocupado na posicao, de forma analoga ao free. Ou seja, liberar toda a memoria alocada para este ponteiro na funcao aloca.
 		int libera(char* ponteiro);
@@ -72,16 +72,19 @@ char* meualoc::aloca(unsigned short int tamanho){
 	Valor numero1;
 	Valor numero2;
 	if(politicaMem == 0){//FIRST FIT
+		retorno = NULL;
 		printf("meualocAloca - vou alocar espaco FF\n");
 		inicio = espacosVazios->buscar(tamanho,0);
-		retorno = inicio + (sizeof(char)*4); //JA ALOCOU
-		numero1.valor = tamanho;
-		numero2.valor = numeroMagico;
-		inicio[0] = numero1.byte1;
-		inicio[1] = numero1.byte0;//SALVOU DADOS DE HEADER
-		inicio[2] = numero2.byte1;
-		inicio[3] = numero2.byte0;
-		
+		if(inicio != NULL){
+			retorno = inicio + (sizeof(char)*4); //JA ALOCOU
+			numero1.valor = tamanho;
+			numero2.valor = numeroMagico;
+			inicio[0] = numero1.byte1;
+			inicio[1] = numero1.byte0;//SALVOU DADOS DE HEADER
+			inicio[2] = numero2.byte1;
+			inicio[3] = numero2.byte0;
+		}
+		return retorno;		
 	}
 	if(politicaMem == 1){
 		return espacosVazios->buscar(tamanho,1);
@@ -98,21 +101,27 @@ void meualoc::imprimePolitica(){
 	printf("aqui e a politica: %d\n",politicaMem);
 }
 
-int meualoc::verifica(char* ponteiro, int posicao = 0){
-	ponteiro -= 2;
-	Valor nMagic;
-	nMagic.valor = 0;
-	nMagic.byte1 = ponteiro[0];
-	nMagic.byte0 = ponteiro[1];
-	
-	if(nMagic.valor == numeroMagico){
-		ponteiro -=2;
-		Valor tamanho;
-		tamanho.valor = 0;
-		tamanho.byte1 = ponteiro[0];
-		tamanho.byte0 = ponteiro[1];
-		return tamanho.valor;
-	}else{
+int meualoc::verifica(char* ponteiro){
+	if(ponteiro == NULL){
 		return 0;
+	}else{
+		ponteiro -= 2;
+		Valor nMagic;
+		nMagic.valor = 0;
+		nMagic.byte1 = ponteiro[0];
+		nMagic.byte0 = ponteiro[1];
+		
+		if(nMagic.valor == numeroMagico){
+			printf("Entrou no if\n");
+			ponteiro -=2;
+			Valor tamanho;
+			tamanho.valor = 0;
+			tamanho.byte1 = ponteiro[0];
+			tamanho.byte0 = ponteiro[1];
+			return tamanho.valor;
+		}else{
+			printf("Entrou no else\n");
+			return 0;
+		}
 	}
 }
