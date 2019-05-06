@@ -3,51 +3,56 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
+//Célula contendo o endereço e o tamanho de um segmento de memória livre, e um ponteiro para a próxima célula do mesmo tipo, ambas dentro do bloco principal de memória,
 class Elemento{
     public:
         //ATRIBUTOS
-        char* addr;     //Ponteiro para o primeiro byte válido do bloco de memória alocado
-        int tamanho;    //Tamanho em BYTES do bloco de memória alocado
-        Elemento* proximo;
+        char* addr;     //Ponteiro para o primeiro byte válido do bloco de memória alocado. Como o bloco de memória principal é um vetor de char, para armazenar um endereço desse bloco utiliza-se um ponteiro para char.
+        int tamanho;    //Tamanho em BYTES do segmento de memória alocado
+        
+        Elemento* proximo;  //Ponteiro para uma segunda instância da classe Elemento.
 
         //METODOS
+        //Construtor
         Elemento(char* ponteiro, int tam);
-
+        //Destrutor
         ~Elemento();
 };
 
-//Construtor da classe
+//Construtor Elemento
 Elemento::Elemento(char* ponteiro, int tam){
     addr = ponteiro;
     tamanho = tam;
     proximo = NULL;
 }
 
+//Lista de segmentos (elementos) de memória livre dentro do bloco de memória principal
 class Encadeada{
     public:
         //ATRIBUTOS
-        Elemento* primeiro;     //Ponteiro para o primeiro elemento da lista
-        
+        Elemento* primeiro;     //Ponteiro para o primeiro elemento da lista   
         int numElementos;       //Quantidade de elementos contidos na lista
-        //METODOS
+        
+        //METODOS -  Operações a serem realizadas na lista
         Encadeada();
 
-        void inserir(Elemento* elem);
+        void inserir(Elemento* elem);   //Inserir novo elemento na lista
 
-        char* buscar(unsigned short int tamanho, int opcao);
+        char* buscar(unsigned short int tamanho, int politicaMemoria);    //Buscar por um espaço
 
         int remover(Elemento* elem);
 
         ~Encadeada();
 };
 
+//Construtor Encadeada
 Encadeada::Encadeada(){
     primeiro = NULL;
     numElementos = 0;
 }
 
 void Encadeada::inserir(Elemento* elem){
+//Se um novo elemento é inserido na LISTA DE ESPAÇOS LIVRES, significa que a memória está sendo menos utilizada.
     if(primeiro==NULL){
         primeiro = elem;
         numElementos += 1;
@@ -63,45 +68,61 @@ void Encadeada::inserir(Elemento* elem){
     printf("Fim EncadeadaInserir\n");
 }
 
-char* Encadeada::buscar(unsigned short int tamanho, int opcao){
-    //Um bloco válido de memória é constituído de um cabecalho de de 4BYTES + tamanho solicitado para alocação
+//Retorna um PONTEIRO com para o HEADER do ENDEREÇO DO BLOCO DE MEMÓRIA suficientemente livre para comportar a quantidade de memória solicitada para alocação.
+char* Encadeada::buscar(unsigned short int tamanho, int politicaMemoria){
+    //Um bloco válido de memória é constituído de um cabecalho de 4BYTES + tamanho solicitado para alocação
     unsigned short int tamanhoTotal = tamanho+(sizeof(char)*4);
-    
+    char* addrAux;
+    Elemento* elementoAux =  primeiro;
+
+    printf("EncadeadaBuscar\n");
     //FIRST FIT
-    if(opcao == 0){
-        Elemento* auxiliar =  primeiro;
-        while(auxiliar != NULL){
-            if(auxiliar->tamanho >= tamanhoTotal){
-                printf("EncadeadaBuscar - espaco vazio encontrado FF");
-                char* auxiliar2 = auxiliar->addr;
-                auxiliar->addr += tamanhoTotal;
-                auxiliar->tamanho = auxiliar->tamanho - tamanhoTotal;  
-                return auxiliar2;
+    if(politicaMemoria == 0){
+        while(elementoAux != NULL){
+            if(elementoAux->tamanho >= tamanhoTotal){
+                printf("Espaco vazio encontrado FF.\n");
+                addrAux = elementoAux->addr;
+                elementoAux->addr += tamanhoTotal;
+                elementoAux->tamanho = elementoAux->tamanho - tamanhoTotal;
+                printf("Alocado com sucesso!\n"); 
+                return addrAux;
             }else {
-                auxiliar = auxiliar->proximo;
-            }
-            if(auxiliar == NULL){
-                printf("EncadeadaBuscar - Sem espaco vazio disponivel\n");
-                return NULL;
-            }
+                elementoAux = elementoAux->proximo;
+            }            
         }
-    }
+        if(elementoAux == NULL){
+            printf("Sem espaco vazio disponivel\n");
+            return NULL;
+        }
     //BEST FIT
-    if(opcao == 1){
-        Elemento* auxiliar = primeiro;
-        Elemento* menorSpace = NULL;
-        while(auxiliar != NULL){
-            if(auxiliar->tamanho >= (tamanho+(sizeof(char)*4))){
-                if(menorSpace == NULL){
-                    menorSpace = auxiliar;
+    }else{
+        Elemento* bestFit = NULL;
+        while(elementoAux != NULL){
+            //ElementoAux possui espaço suficiente para alocar a quantidade de memória solicitada.
+            if(elementoAux->tamanho >= tamanhoTotal){
+                //Na primeira iteração da busca, o primeiro segmento no qual o bloco requisitado couber, será considerado como a melhor opção para a alocação de memória.
+                if(bestFit == NULL){
+                    printf("Espaco vazio encontrado BF.\n");
+                    bestFit = elementoAux;
                 }else{
-                    if(auxiliar->tamanho <= menorSpace->tamanho) {
-                        menorSpace = auxiliar;
+                    //Após a primeira iteração da busca, se houver um espaço livre menor no qual a quantidade de memória solicitada couber, esse espaço será considerado como o best fit para a alocação.
+                    if(elementoAux->tamanho <= bestFit->tamanho) {
+                        bestFit = elementoAux;
                     }
                 }
             }
-            auxiliar = auxiliar->proximo;
+            //Continua a busca através da lista.
+            elementoAux = elementoAux->proximo;
         }
-        return menorSpace->addr;
-    }
+        if(bestFit == NULL){
+            printf("Sem espaco vazio disponivel\n");
+            return NULL;
+        }else{
+            addrAux = bestFit->addr;
+            bestFit->addr += tamanhoTotal;
+            bestFit->tamanho = bestFit->tamanho - tamanhoTotal;
+            printf("Alocado com sucesso!\n\n");
+            return addrAux;
+        }
+    } 
 }

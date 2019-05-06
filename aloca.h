@@ -33,14 +33,29 @@ class meualoc{
     int politicaMem;
 	unsigned short int numeroMagico;
 	public:
+
+		Encadeada* espacosVazios;
+	
 		//tamanhoMemoria vai definir o tamanho da memória que o alocador vai utilizar
 		//politicaMem define como escolher o bloco de onde saira a memória
 		meualoc(int tamanhoMemoria,int politicaMem);
 
-		//Pega um pedaco da variavel memoria e aloca, retornando o ponteiro para o comeco dessa regiao e atualizando a lista de livres.
+		//Pega um pedaco da variavel memoria e aloca, retornando o ponteiro para o comeco dessa regiao e atualizando a lista de espaços livres.
+		/**
+		 * @brief 
+		 * 
+		 * @param tamanho 
+		 * @return char* 
+		 */
 		char *aloca(unsigned short int tamanho);
 
-		//Verifica se a posicao dada pelo ponteiro esta alocada (checar se ponteiro[posicao] eh valido). Retorna o tamanho se estiver e 0 se nao
+		
+		/* 
+		 * @brief Verifica se a posição referenciada pelo ponteiro está é um bloco válido de memória alocada. Retorna o tamnho caso positivo,0 caso contrário.
+		 * 
+		 * @param ponteiro Endereço de memória no bloco principal.
+		 * @return int Tamanho do bloco alocado; 0.
+		 */
 		int verifica(char* ponteiro);
 		
 		//Libera o espaco ocupado na posicao, de forma analoga ao free. Ou seja, liberar toda a memoria alocada para este ponteiro na funcao aloca.
@@ -52,47 +67,46 @@ class meualoc{
 		void imprimePolitica();
 
 		~meualoc();
-		Encadeada* espacosVazios;
 };
 
 //Construtor da classe meualoc
 meualoc::meualoc(int tamanhoMemoria, int politicMem){
 	memoria = (char *) malloc(sizeof(char)*tamanhoMemoria);
 	politicaMem = politicMem;
-	numeroMagico = 20596;
+	numeroMagico = 32384;
+	//Lista de gerenciamento de memória livre
 	espacosVazios = new Encadeada();
-	//LISTA COM ESPACO TODO VAZIO
-	Elemento* blocao = new Elemento(memoria,tamanhoMemoria);
-	espacosVazios->inserir(blocao);
-	
+	//Ao iniciar o alocador, a lista de memória livre (lista de Elementos) é igual ao bloco principal de memória.
+	espacosVazios->inserir(new Elemento(memoria,tamanhoMemoria));	//LUIZ ACHA ISSO MUITO FEIO, MAS SÓ ELE PENSA ASSIM.
 }
 
 char* meualoc::aloca(unsigned short int tamanho){
-	char* header;
-	char* bloco;
+	char* header;		//Ponteiro para o header
+	char* bloco;		//Ponteiro para o primeito BYTE VÁLIDO do bloco alocado
 	Valor tamanhoByte;
 	Valor numeroMagicoByte;
 
-	//FIRST FIT
-	if(politicaMem == 0){
-		header = NULL;
-		printf("meualocAloca - vou alocar espaco FF\n");
-		bloco = espacosVazios->buscar(tamanho, politicaMem);
-		if(bloco != NULL){
-			header = bloco + (sizeof(char)*4); //JA ALOCOU
-			tamanhoByte.valor = tamanho;
-			numeroMagicoByte.valor = numeroMagico;
-			bloco[0] = tamanhoByte.byte1;
-			bloco[1] = tamanhoByte.byte0;//SALVOU DADOS DE HEADER
-			bloco[2] = numeroMagicoByte.byte1;
-			bloco[3] = numeroMagicoByte.byte0;
-		}
-		return header;		
+	printf("meualocAloca: vou alocar espaço...\n");
+
+	header = NULL;	
+	header = espacosVazios->buscar(tamanho, politicaMem);
+	if(header != NULL){
+		bloco = header + (sizeof(char)*4); //JA ALOCOU
+		tamanhoByte.valor = tamanho;
+		numeroMagicoByte.valor = numeroMagico;
+		header[0] = tamanhoByte.byte1;
+		header[1] = tamanhoByte.byte0;
+		header[2] = numeroMagicoByte.byte1;
+		header[3] = numeroMagicoByte.byte0;	//SALVOU DADOS DE HEADER
+		printf("%d BYTES alocados em %p\n\n", tamanho, bloco);
+
+		return bloco;		
+	}else{
+		printf("Memória não alterada.\n");
+		return NULL;
 	}
-	//BEST FIT
-	if(politicaMem == 1){
-		return espacosVazios->buscar(tamanho, politicaMem);
-	}
+	
+	
 }
 
 meualoc::~meualoc(){
@@ -128,6 +142,7 @@ int meualoc::verifica(char* ponteiro){
 			return tamanho.valor;
 		}else{
 			//O endereço não corresponde a um bloco válido de memória alocada.
+			printf("O endereço não corresponde a um bloco válido de memória alocada.\n");
 			return 0;
 		}
 	}
