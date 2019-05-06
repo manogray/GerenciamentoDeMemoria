@@ -1,74 +1,75 @@
-#include <stdlib.h>
-#include <stdio.h>
+/*  Programa manipulador de bits    */
+/*  NÃO ESTÁ FUNCIONANDO    */
 #include <iostream>
-#include <vector>
-#include <bitset>
 #include <sstream>
+#include <cstdlib>
+#include <string>
 #include <string.h>
+#include <bitset>
+#include <cstddef>
+
+//  ENVIRONMENT VARIABLES
+using namespace std;
+
+//  PROTOTYPES
 
 
-
-// FUNCTIONS PROTOTYPE
-const char* decToHex(unsigned short int decimal);
 
 int main(int argc, char** argv){
-
-    char* cabecalho = (char*)malloc(sizeof(char)*4);
-    unsigned short int* subCabecalho = (unsigned short int*)(malloc(sizeof(int)*2));
-
-    // Tamanho do bloco em bytes
-    unsigned short int tamanhoBloco = 110;      
-    // Número aleatório para determinar se um bloco de memória foi ou não alocado.
-    unsigned short int numeroMagico = 32384;       
-    // Máscara de bits
-    unsigned short int mascara = 255;
-
-    subCabecalho[0] = (numeroMagico & mascara);
     
-    std::cout << "Antes da operação : " << numeroMagico << "\n";
-    std::cout << "Aplicando a máscara: numeroMagico & mascara = " 
-    << subCabecalho[0] << "\n";
-    printf("subCabecalho[0] = %u\n", subCabecalho[0]);
-    
-    // Deslocamento à direita
-    numeroMagico = numeroMagico >> 8;
+    char* header = (char*)malloc(sizeof(char)*4);   //  HEADER HAS LENGHT OF 4 BYTES
+                                                    //  HEADER = {SIZE, MAGICNUMBER}
+    unsigned int magicNumber = 32384;               //  MEMORY BLOCK VERIFICATION NUMBER
+    unsigned int size = 110;                        //  SIZE OF THE ALOCATED BLOCK OF MEMORY
+    unsigned int bitMask = 255;
+    unsigned char maskedByte1, maskedByte2;
 
-    subCabecalho[1] = (numeroMagico & mascara);
 
-    std::cout << "Depois do shift : " << numeroMagico << "\n";
-    std::cout << "Aplicando a máscara: numeroMagico & mascara = " 
-    << subCabecalho[1] << "\n";
-    printf("subCabecalho[1] = %u\n", subCabecalho[1]);
+    maskedByte2 = (magicNumber & bitMask);
 
-    // DECIMAL TO HEX
-    const char* test = decToHex(subCabecalho[0]);
-    //? ADICIONAR CHARS INDIVIDUALMENTE NO CABECALHO
-    std::cout << "Printing cabecalho[0] = test[0] : " << cabecalho[0] << "\n";
-    test = decToHex(subCabecalho[1]);
-    
+    uint8_t slidePressure = (uint8_t)atoi(maskedByte2);
+    uint8_t masked = (uint8_t)maskedByte2;
+    printf("masked %d\n", masked);
+    header[0] = masked;
+    printf("header[0]: %d\n", header[0]);
+    if(masked < 0){
+        masked = ~masked;
+        printf("masked %d\n", masked);
+
+    }
+ 
+    printf("unsigned short maskedByte2 : %u\tsize: ", maskedByte2);
+    cout << sizeof(maskedByte2) << "\n";
+
+    magicNumber = magicNumber >> 8;
+
+    maskedByte1 = (magicNumber & bitMask);
+    printf("unsigned short maskedByte1 : %d\tsize: ", maskedByte1);
+    cout << sizeof(maskedByte1) << "\n";
+
+   
 
     
+
 
     return 0;
 }
 
-// FUNCTIONS
-const char* decToHex(unsigned short int decimal){
-    const char* numberHex;
-    std::stringstream ss;
-    ss<< std::hex << decimal; // int decimal_value
-    std::string res (ss.str());
-    numberHex = res.c_str();
-    std::cout << "Imprimindo decimal em hex : " << numberHex << "\n";
 
-    return numberHex;
-};
 
+
+//  BEGIN FUNCTIONS
 /*
-unsigned short int hexToDec(char* hexNumber){}
-    std::stringstream ss;
-    ss  << hex_value ; // std::string hex_value
-    ss >> std::hex >> decimal_value ; //int decimal_value
-    std::cout << decimal_value ;
+ std::byte x = (std::byte)maskedByte2;
+    std::cout << sizeof((char)x) << std::endl;
+    std::cout << (char)x << std::endl;
+    std::byte y = (std::byte)maskedByte1;    
+    std::cout << (int)y << std::endl;
 
-}*/
+    //std::byte myByte{ 2 };
+    //std::cout << std::to_integer<int>(myByte) << std::endl;
+    //memcpy(header, &headerAux ,sizeof(unsigned char));
+    
+*/
+
+//  END FUNCTIONS

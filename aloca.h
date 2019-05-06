@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "encadeada.h"
 
-
+//Decompõe um interio em BYTES e vice-versa
 union Valor
 {
     uint32_t dword;
@@ -55,6 +55,7 @@ class meualoc{
 		Encadeada* espacosVazios;
 };
 
+//Construtor da classe meualoc
 meualoc::meualoc(int tamanhoMemoria, int politicMem){
 	memoria = (char *) malloc(sizeof(char)*tamanhoMemoria);
 	politicaMem = politicMem;
@@ -67,27 +68,30 @@ meualoc::meualoc(int tamanhoMemoria, int politicMem){
 }
 
 char* meualoc::aloca(unsigned short int tamanho){
-	char* retorno;
-	char* inicio;
-	Valor numero1;
-	Valor numero2;
-	if(politicaMem == 0){//FIRST FIT
-		retorno = NULL;
+	char* header;
+	char* bloco;
+	Valor tamanhoByte;
+	Valor numeroMagicoByte;
+
+	//FIRST FIT
+	if(politicaMem == 0){
+		header = NULL;
 		printf("meualocAloca - vou alocar espaco FF\n");
-		inicio = espacosVazios->buscar(tamanho,0);
-		if(inicio != NULL){
-			retorno = inicio + (sizeof(char)*4); //JA ALOCOU
-			numero1.valor = tamanho;
-			numero2.valor = numeroMagico;
-			inicio[0] = numero1.byte1;
-			inicio[1] = numero1.byte0;//SALVOU DADOS DE HEADER
-			inicio[2] = numero2.byte1;
-			inicio[3] = numero2.byte0;
+		bloco = espacosVazios->buscar(tamanho, politicaMem);
+		if(bloco != NULL){
+			header = bloco + (sizeof(char)*4); //JA ALOCOU
+			tamanhoByte.valor = tamanho;
+			numeroMagicoByte.valor = numeroMagico;
+			bloco[0] = tamanhoByte.byte1;
+			bloco[1] = tamanhoByte.byte0;//SALVOU DADOS DE HEADER
+			bloco[2] = numeroMagicoByte.byte1;
+			bloco[3] = numeroMagicoByte.byte0;
 		}
-		return retorno;		
+		return header;		
 	}
+	//BEST FIT
 	if(politicaMem == 1){
-		return espacosVazios->buscar(tamanho,1);
+		return espacosVazios->buscar(tamanho, politicaMem);
 	}
 }
 
@@ -106,21 +110,24 @@ int meualoc::verifica(char* ponteiro){
 		return 0;
 	}else{
 		ponteiro -= 2;
+		//Reconstruindo Número Mágico do endereço fornecido em formato unsigned short(2BYTES)
 		Valor nMagic;
 		nMagic.valor = 0;
 		nMagic.byte1 = ponteiro[0];
 		nMagic.byte0 = ponteiro[1];
-		
+		//Comparando Número Mágico do alocador com o Número Mágico do endereço fornecido
+		//Se os números forem compatíveis, o endereço é de um bloco de válido memória alocada
 		if(nMagic.valor == numeroMagico){
-			printf("Entrou no if\n");
 			ponteiro -=2;
+			//Reconstruindo tamnho do bloco alocado em formato unsigned short (2BYTES)
 			Valor tamanho;
 			tamanho.valor = 0;
 			tamanho.byte1 = ponteiro[0];
 			tamanho.byte0 = ponteiro[1];
+			//Retornando tamanho do bloco alocado
 			return tamanho.valor;
 		}else{
-			printf("Entrou no else\n");
+			//O endereço não corresponde a um bloco válido de memória alocada.
 			return 0;
 		}
 	}

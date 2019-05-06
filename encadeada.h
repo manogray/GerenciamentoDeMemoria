@@ -1,18 +1,23 @@
+/*  Classe da lista encadeada por onde o alocador de memória fará o gerenciamento de memória livre */
+
 #include <stdlib.h>
 #include <stdio.h>
+
 
 class Elemento{
     public:
         //ATRIBUTOS
-        char* addr;
-        int tamanho;
+        char* addr;     //Ponteiro para o primeiro byte válido do bloco de memória alocado
+        int tamanho;    //Tamanho em BYTES do bloco de memória alocado
         Elemento* proximo;
+
         //METODOS
         Elemento(char* ponteiro, int tam);
 
         ~Elemento();
 };
 
+//Construtor da classe
 Elemento::Elemento(char* ponteiro, int tam){
     addr = ponteiro;
     tamanho = tam;
@@ -22,9 +27,9 @@ Elemento::Elemento(char* ponteiro, int tam){
 class Encadeada{
     public:
         //ATRIBUTOS
-        Elemento* primeiro;
+        Elemento* primeiro;     //Ponteiro para o primeiro elemento da lista
         
-        int numElementos;
+        int numElementos;       //Quantidade de elementos contidos na lista
         //METODOS
         Encadeada();
 
@@ -59,8 +64,11 @@ void Encadeada::inserir(Elemento* elem){
 }
 
 char* Encadeada::buscar(unsigned short int tamanho, int opcao){
+    //Um bloco válido de memória é constituído de um cabecalho de de 4BYTES + tamanho solicitado para alocação
     unsigned short int tamanhoTotal = tamanho+(sizeof(char)*4);
-    if(opcao == 0){//FIRST FIT
+    
+    //FIRST FIT
+    if(opcao == 0){
         Elemento* auxiliar =  primeiro;
         while(auxiliar != NULL){
             if(auxiliar->tamanho >= tamanhoTotal){
@@ -78,8 +86,8 @@ char* Encadeada::buscar(unsigned short int tamanho, int opcao){
             }
         }
     }
-
-    if(opcao == 1){//BEST FIT
+    //BEST FIT
+    if(opcao == 1){
         Elemento* auxiliar = primeiro;
         Elemento* menorSpace = NULL;
         while(auxiliar != NULL){
