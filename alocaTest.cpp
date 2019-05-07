@@ -12,7 +12,7 @@ int main(){
     cout << "\tTESTE DE ALOCAÇÃO DE MEMÓRIA\n";
     
     //Criando bloco de memória principal (8MB = 8192BYTES)
-    meualoc* memoTest = new meualoc(d,1);
+    meualoc* memoTest = new meualoc(d,0);
 
     printf("\tAlocando %d BYTES\n", a);
     char* addr1 = memoTest->aloca(a);
@@ -32,10 +32,13 @@ int main(){
     printf("\tAlocando %d BYTES\n", d);
     char* addr4 = memoTest->aloca(d);
 
+    memoTest->verifica(addr1, 5120);
     memoTest->verifica(addr4, 5120);
 
-    //memoTest->libera(addr1);
-    //memoTest->libera(addr4);
+    memoTest->libera(addr1);
+    memoTest->libera(addr2);
+    memoTest->libera(addr3);
+    memoTest->libera(addr4);
 
 
     return 0;
