@@ -1,46 +1,5 @@
-/*  Classe da lista encadeada por onde o alocador de memória fará o gerenciamento de memória livre */
-
-
-//Célula contendo o endereço e o tamanho de um bloco de memória livre, e um ponteiro para a próxima célula do mesmo tipo, ambas dentro do bloco principal de memória,
-class Bloco{
-    public:
-        //ATRIBUTOS
-        char* addr;     //Ponteiro para o primeiro byte válido do bloco de memória alocado. Como o bloco de memória principal é um vetor de char, para armazenar um endereço desse bloco utiliza-se um ponteiro para char.
-        int tamanho;    //Tamanho em BYTES do bloco de memória alocado
-        Bloco* proximo;  //Ponteiro para o próximo Bloco da lista.
-
-        //METODOS
-        //Construtor
-        Bloco(char* ponteiro, int tam);
-        //Destrutor
-        ~Bloco();
-};
-
-//Construtor Bloco
-Bloco::Bloco(char* ponteiro, int tam){
-    addr = ponteiro;
-    tamanho = tam;
-    proximo = NULL;
-}
-
-//Lista de blocos de memória livre dentro do bloco de memória principal
-class MemoriaLivre{
-    public:
-        //ATRIBUTOS
-        Bloco* primeiro;     //Ponteiro para o primeiro bloco da lista   
-        int numBlocos;       //Quantidade de blocos contidos na lista
-        
-        //METODOS -  Operações a serem realizadas na lista
-        MemoriaLivre();
-
-        void inserir(Bloco* bloco);   //Inserir novo bloco na lista
-
-        char* buscar(unsigned short int tamanho, int politicaMemoria);    //Buscar por um espaço
-
-        void join(MemoriaLivre* memoriaLivre);
-
-        ~MemoriaLivre();
-};
+#include "alocador.h"
+#include <iostream>
 
 //Construtor MemoriaLivre
 MemoriaLivre::MemoriaLivre(){

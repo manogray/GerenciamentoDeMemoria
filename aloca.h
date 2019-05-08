@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
+#include <iostream>
 #include "alocador.h"
 
 //Decompõe um interio em BYTES e vice-versa

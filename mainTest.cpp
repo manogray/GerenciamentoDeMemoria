@@ -1,9 +1,8 @@
 /* ARQUIVO DE TESTE PARA O ALOCADOR DE MEMORIA */
 #include "aloca.h"
-#include "alocador.h"
 #include <stdlib.h>
-//#include <stdio.h>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
