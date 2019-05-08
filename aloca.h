@@ -72,8 +72,8 @@ meualoc::meualoc(int tamanhoMemoria, int politicMem){
 	numeroMagico = 32384;
 	//Lista de gerenciamento de memória livre
 	espacosVazios = new MemoriaLivre();
-	//Como a memória inteira está livre, o primeiro segmento de memória a ser inserido em MemoriaLivre é do tamanho da própria memória.
-	espacosVazios->inserir(new Segmento(memoria,tamanhoMemoria));	//LUIZ ACHA ISSO MUITO FEIO, MAS SÓ ELE PENSA ASSIM.
+	//Como a memória inteira está livre, o primeiro bloco de memória a ser inserido em MemoriaLivre é do tamanho da própria memória.
+	espacosVazios->inserir(new Bloco(memoria,tamanhoMemoria));	//LUIZ ACHA ISSO MUITO FEIO, MAS SÓ ELE PENSA ASSIM.
 }
 
 //O tamanho solicitado para alocaçãopassado NÃO considera o tamanho do header do bloco de memória. É solicitado um tamanho N em BYTES, e caso esse esteja disponível, um SEGMENTO de N+4BYTES será subtraído da lista MemoriaLivre.
@@ -85,7 +85,7 @@ char* meualoc::aloca(unsigned short int tamanho){
 
 	printf("[meualoc::aloca]: Alocando espaço...\n");
 
-	//Ao alocarmos um novo bloco de memória, é necessário atualizar a lista MemoriaLivre.
+	//Ao alocarmos um novo bloco de memória, é necessário atualizar a lista MemoriaLivre, ou seja, remover um bloco da lista de memória livre.
 	header = NULL;	
 	header = espacosVazios->buscar(tamanho, politicaMem);
 	if(header != NULL){
@@ -159,17 +159,17 @@ int meualoc::libera(char* ponteiro){
 	char* tempAddr;
 	int tamanho = verifica(ponteiro, 0);
 
-	printf("[LIBERA] Tamanho do bloco a ser liberado (sem o header): %d.\n", tamanho);
+	printf("\n[LIBERA] Tamanho do bloco a ser liberado (sem o header): %d.\n", tamanho);
 
 	if(	(tamanho <= 0)||(ponteiro == NULL)	){
-		printf("[LIBERA] Erro: o endereço fornecido não se refere a um bloco válido de memória alocada.\n");
+		printf("\n[LIBERA] Erro: o endereço fornecido não se refere a um bloco válido de memória alocada.\n");
 		return 1;
 	}else{
 		tamanho+=4;		//Tamanho do bloco somado ao tamanho do header.
 		ponteiro-=4;	//Ponteiro agora aponta para o header.
 
 		//Atualizando MemoriaLivre
-		espacosVazios->inserir(new Segmento(ponteiro,tamanho));		
+		espacosVazios->inserir(new Bloco(ponteiro,tamanho));		
 		
 		//Liberando memória alocada
 		while (tamanho >= 0)
@@ -180,7 +180,9 @@ int meualoc::libera(char* ponteiro){
 
 			--tamanho;			
 		}
-		printf("[LIBERA] Bloco liberado com sucesso!\n");	
+		printf("\n[LIBERA] Bloco liberado com sucesso!\n");	
+
+		espacosVazios->join(espacosVazios);
 		return 0;	
 	}
 };

@@ -3,43 +3,43 @@
 #include <stdlib.h>
 //#include <stdio.h>
 
-//Célula contendo o endereço e o tamanho de um segmento de memória livre, e um ponteiro para a próxima célula do mesmo tipo, ambas dentro do bloco principal de memória,
-class Segmento{
+//Célula contendo o endereço e o tamanho de um bloco de memória livre, e um ponteiro para a próxima célula do mesmo tipo, ambas dentro do bloco principal de memória,
+class Bloco{
     public:
         //ATRIBUTOS
         char* addr;     //Ponteiro para o primeiro byte válido do bloco de memória alocado. Como o bloco de memória principal é um vetor de char, para armazenar um endereço desse bloco utiliza-se um ponteiro para char.
-        int tamanho;    //Tamanho em BYTES do segmento de memória alocado
-        Segmento* proximo;  //Ponteiro para o próximo Segmento da lista.
+        int tamanho;    //Tamanho em BYTES do bloco de memória alocado
+        Bloco* proximo;  //Ponteiro para o próximo Bloco da lista.
 
         //METODOS
         //Construtor
-        Segmento(char* ponteiro, int tam);
+        Bloco(char* ponteiro, int tam);
         //Destrutor
-        ~Segmento();
+        ~Bloco();
 };
 
-//Construtor Segmento
-Segmento::Segmento(char* ponteiro, int tam){
+//Construtor Bloco
+Bloco::Bloco(char* ponteiro, int tam){
     addr = ponteiro;
     tamanho = tam;
     proximo = NULL;
 }
 
-//Lista de segmentos (elementos) de memória livre dentro do bloco de memória principal
+//Lista de blocos de memória livre dentro do bloco de memória principal
 class MemoriaLivre{
     public:
         //ATRIBUTOS
-        Segmento* primeiro;     //Ponteiro para o primeiro elemento da lista   
-        int numSegmentos;       //Quantidade de elementos contidos na lista
+        Bloco* primeiro;     //Ponteiro para o primeiro bloco da lista   
+        int numBlocos;       //Quantidade de blocos contidos na lista
         
         //METODOS -  Operações a serem realizadas na lista
         MemoriaLivre();
 
-        void inserir(Segmento* elem);   //Inserir novo elemento na lista
+        void inserir(Bloco* bloco);   //Inserir novo bloco na lista
 
         char* buscar(unsigned short int tamanho, int politicaMemoria);    //Buscar por um espaço
 
-        int remover(Segmento* elem);
+        void join(MemoriaLivre* memoriaLivre);
 
         ~MemoriaLivre();
 };
@@ -48,22 +48,22 @@ class MemoriaLivre{
 MemoriaLivre::MemoriaLivre(){
     printf("Criando lista encadeada de MemoriaLivre\n");
     primeiro = NULL;
-    numSegmentos = 0;
+    numBlocos = 0;
 }
 
-void MemoriaLivre::inserir(Segmento* segmento){
-//Se um novo segmento é inserido na LISTA DE ESPAÇOS LIVRES, significa que a memória está sendo menos utilizada.
-    //A lista de MemoriaLivre está vazia. Novo segmento é inserido na cabeça da lista.
+void MemoriaLivre::inserir(Bloco* bloco){
+//Se um novo bloco é inserido na LISTA DE ESPAÇOS LIVRES, significa que a memória está sendo menos utilizada.
+    //A lista de MemoriaLivre está vazia. Novo bloco é inserido na cabeça da lista.
     if(primeiro==NULL){
-        primeiro = segmento;
-        numSegmentos += 1;
+        primeiro = bloco;
+        numBlocos += 1;
         printf("MemoriaLivreInserir - inserido na cabeca\n");
     }else{
-        segmento->proximo = primeiro;
-        primeiro = segmento;
+        bloco->proximo = primeiro;
+        primeiro = bloco;
         printf("MemoriaLivreInserir - inserido no inicio\n");
-        numSegmentos += 1;
-        printf("tamanho atual: %d\n",numSegmentos);
+        numBlocos += 1;
+        printf("tamanho atual: %d\n",numBlocos);
     }
     printf("Fim MemoriaLivreInserir\n");
 }
@@ -73,47 +73,47 @@ char* MemoriaLivre::buscar(unsigned short int tamanho, int politicaMemoria){
     //Um bloco válido de memória é constituído de um header de 4BYTES + tamanho solicitado para alocação
     unsigned short int tamanhoTotal = tamanho+(sizeof(char)*4);
     char* addrAux;
-    Segmento* segmentoAux =  primeiro;  //Primeiro Segmento da lista MemoriaLivre.
+    Bloco* blocoAux =  primeiro;  //Primeiro Bloco da lista MemoriaLivre.
     
 
     //FIRST FIT
     if(politicaMemoria == 0){
-        while(segmentoAux != NULL){
-            printf("Imprimindo tamanho do segmento em verificação em MemoriaLivre::buscar %d\n", segmentoAux->tamanho);
-            if(segmentoAux->tamanho >= tamanhoTotal){
-                printf("[FIRST FIT] Memória disponível para alocação: %d\n", segmentoAux->tamanho);
-                addrAux = segmentoAux->addr;
-                segmentoAux->addr += tamanhoTotal;
-                segmentoAux->tamanho = segmentoAux->tamanho - tamanhoTotal;
+        while(blocoAux != NULL){
+            printf("Imprimindo tamanho do bloco em verificação em MemoriaLivre::buscar %d\n", blocoAux->tamanho);
+            if(blocoAux->tamanho >= tamanhoTotal){
+                printf("[FIRST FIT] Memória disponível para alocação: %d\n", blocoAux->tamanho);
+                addrAux = blocoAux->addr;
+                blocoAux->addr += tamanhoTotal;
+                blocoAux->tamanho = blocoAux->tamanho - tamanhoTotal;
                 return addrAux;
             }else {
-                segmentoAux = segmentoAux->proximo;
+                blocoAux = blocoAux->proximo;
             }            
         }
-        if(segmentoAux == NULL){
+        if(blocoAux == NULL){
             printf("Sem espaco livre disponivel\n");
             return NULL;
         }
     //BEST FIT
     }else{
-        Segmento* bestFit = NULL;
-        while(segmentoAux != NULL){
-            printf("Imprimindo tamanho do segmento em verificação em MemoriaLivre::buscar %d\n", segmentoAux->tamanho);
-            //SegmentoAux possui espaço suficiente para alocar a quantidade de memória solicitada.
-            if(segmentoAux->tamanho >= tamanhoTotal){
-                //Na primeira iteração da busca, o primeiro segmento no qual o bloco requisitado couber, será considerado como a melhor opção para a alocação de memória.
+        Bloco* bestFit = NULL;
+        while(blocoAux != NULL){
+            printf("Imprimindo tamanho do bloco em verificação em MemoriaLivre::buscar %d\n", blocoAux->tamanho);
+            //BlocoAux possui espaço suficiente para alocar a quantidade de memória solicitada.
+            if(blocoAux->tamanho >= tamanhoTotal){
+                //Na primeira iteração da busca, o primeiro bloco no qual o bloco requisitado couber, será considerado como a melhor opção para a alocação de memória.
                 if(bestFit == NULL){
-                    bestFit = segmentoAux;
+                    bestFit = blocoAux;
                     printf("[BEST FIT] Memória disponível para alocação: %d\n", bestFit->tamanho);
                 }else{
                     //Após a primeira iteração da busca, se houver um espaço livre menor no qual a quantidade de memória solicitada couber, esse espaço será considerado como o best fit para a alocação.
-                    if(segmentoAux->tamanho <= bestFit->tamanho) {
-                        bestFit = segmentoAux;
+                    if(blocoAux->tamanho <= bestFit->tamanho) {
+                        bestFit = blocoAux;
                     }
                 }
             }
             //Continua a busca através da lista.
-            segmentoAux = segmentoAux->proximo;
+            blocoAux = blocoAux->proximo;
         }
         if(bestFit == NULL){
             printf("Sem espaco vazio disponivel\n");
@@ -122,9 +122,39 @@ char* MemoriaLivre::buscar(unsigned short int tamanho, int politicaMemoria){
             addrAux = bestFit->addr;
             bestFit->addr += tamanhoTotal;
             bestFit->tamanho = bestFit->tamanho - tamanhoTotal;
+            //Removendo bloco da lista MemoriaLivre
             return addrAux;
         }
     } 
 }
 
+void MemoriaLivre::join(MemoriaLivre* MemoriaLivre){
+    Bloco* atual = MemoriaLivre->primeiro;
+    char* addrAtual = atual->addr;
+    int tamanhoAtual = atual->tamanho;
+    Bloco* seguinte;
+    
+    printf("\n[JOIN]\n");
+    
+    while(atual->proximo != NULL){
+        printf("\n\t[JOIN] Entrou no while\n");
+        seguinte = atual->proximo;
+        char* addrSeguinte = seguinte->addr;
+        int tamanhoSeguinte = seguinte->tamanho;
 
+        printf("\n\t\t[JOIN] Antes do if\n");
+        if( (addrSeguinte-1) == (addrAtual+tamanhoAtual)  ){
+            printf("[JOIN] Encontrados blocos contíguos de memória livre.\n");
+            atual->proximo = seguinte->proximo;
+            atual->tamanho = (seguinte->tamanho) + 4;   //4BYTES do header
+
+            seguinte->proximo = NULL;
+            for(int i=0; i<4;i++){
+                addrSeguinte=NULL;
+                addrSeguinte++;
+            }
+        }else{
+            atual = atual->proximo;
+        }
+    }
+}
