@@ -1,4 +1,18 @@
 /* ARQUIVO DE TESTE PARA O ALOCADOR DE MEMORIA */
+/**
+ * @file aloca.cpp
+ * @author EVALDO PATRIK DOS SANTOS CARDOSO - 21453640
+ * @author JONATHAS GREGORIO KERBER - 21351288
+ * @author LUIZ DE GONZAGA MOTA PINTO FILHO - 21753684
+ * 
+ * @version 0.1
+ * @date 2019-05-10
+ * 
+ * @copyright Copyright (c) 2019
+ */
+
+
+
 #include "aloca.h"
 #include <stdlib.h>
 #include <iostream>
