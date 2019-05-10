@@ -12,7 +12,7 @@ int main(){
     cout << "\tTESTE DE ALOCAÇÃO DE MEMÓRIA\n";
     
     //Criando bloco de memória principal (8MB = 8192BYTES)
-    meualoc* memoTest = new meualoc(d,0);
+    meualoc* memoTest = new meualoc(d,1);
 
     printf("\tAlocando %d BYTES\n", a);
     char* addr1 = memoTest->aloca(a);
@@ -22,6 +22,9 @@ int main(){
 
     printf("\tAlocando %d BYTES\n", c);
     char* addr3 = memoTest->aloca(c);
+
+    //IMPRIMINDO ELEMENTOS EM MEMORIALIVRE
+    memoTest->imprimeDados();
            
     
     //TESTANDO VERIFICADOR DE BLOCOS
@@ -36,9 +39,31 @@ int main(){
     memoTest->verifica(addr4, 5120);
 
     memoTest->libera(addr1);
+    
+    //IMPRIMINDO ELEMENTOS EM MEMORIALIVRE
+    memoTest->imprimeDados();
     memoTest->libera(addr2);
+    
+    //IMPRIMINDO ELEMENTOS EM MEMORIALIVRE
+    memoTest->imprimeDados();
+
+    printf("\tAlocando %d BYTES\n", a);
+    addr1 = memoTest->aloca(a);    
+
+    //IMPRIMINDO ELEMENTOS EM MEMORIALIVRE
+    memoTest->imprimeDados();
+
+    memoTest->libera(addr1);
     memoTest->libera(addr3);
     memoTest->libera(addr4);
+
+    //IMPRIMINDO ELEMENTOS EM MEMORIALIVRE
+    memoTest->imprimeDados();
+
+    memoTest->~meualoc();
+
+    //IMPRIMINDO ELEMENTOS EM MEMORIALIVRE
+    memoTest->imprimeDados();
 
 
     return 0;
