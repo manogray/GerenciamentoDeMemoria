@@ -182,7 +182,7 @@ int meualoc::libera(char* ponteiro){
 
 		espacosVazios->join(espacosVazios);
 
-		printf("\n[LIBERA] Segmento liberado com sucesso!\n\n");	
+		printf("[LIBERA] Segmento liberado com sucesso!\n\n");	
 		
 		return 0;	
 	}
@@ -192,7 +192,7 @@ int meualoc::libera(char* ponteiro){
 void meualoc::imprimeDados(){
 	Segmento* auxSeg;
 
-	printf("[IMPRIME DADOS].\n");
+	printf("[IMPRIME DADOS] Segmentos de memória disponível para alocação.\n");
 	auxSeg = espacosVazios->primeiro;
 	for(int i = 0; i < espacosVazios->numSegmentos; i++){
 		printf("\tElemento %d\tTamanho: %d\t Addr: ", i+1, auxSeg->tamanho);	
@@ -201,7 +201,7 @@ void meualoc::imprimeDados(){
 			auxSeg = auxSeg->proximo;
 		}
 	}
-	printf("[IMPRIME DADOS] Sem elementos a serem impressos.\n");
+	printf("[IMPRIME DADOS] Sem elementos a serem impressos.\n\n");
 }
 
 void meualoc::imprimePolitica(){

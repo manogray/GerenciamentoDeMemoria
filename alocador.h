@@ -94,31 +94,38 @@ char* MemoriaLivre::buscar(unsigned short int tamanho, int politicaMemoria){
     //BEST FIT
     }else{
         Segmento* bestFit = NULL;
+        Segmento* segmentoAnterior = NULL;
+        Segmento* segmentoBuffer = primeiro;
+
         while(segmentoAux != NULL){
             //SegmentoAux possui espaço suficiente para alocar a quantidade de memória solicitada.
             if(segmentoAux->tamanho >= tamanhoTotal){
                 //Na primeira iteração da busca, o primeiro segmento no qual o segmento requisitado couber, será considerado como a melhor opção para a alocação de memória.
                 if(bestFit == NULL){
+                    printf("\t[BEST FIT] NULL FIT COM %dBYTES.\n", segmentoAux->tamanho);
                     bestFit = segmentoAux;
-                    printf("[BEST FIT] Memória disponível para alocação: %d\n", bestFit->tamanho);
                 }else{
                     //Após a primeira iteração da busca, se houver um espaço livre menor no qual a quantidade de memória solicitada couber, esse espaço será considerado como o best fit para a alocação.
-                    if(segmentoAux->tamanho <= bestFit->tamanho) {
+                    if(segmentoAux->tamanho <= bestFit->tamanho){
                         bestFit = segmentoAux;
+                        printf("[BEST FIT] Tamanho do segmento selecionado para alocação: %d\n", bestFit->tamanho);
+                        segmentoAnterior = segmentoBuffer;
+                        segmentoAnterior->proximo = bestFit;
                     }
                 }
             }
             //Continua a busca através da lista.
-            segmentoAux = segmentoAux->proximo;
+            segmentoBuffer = segmentoAux;              
+            segmentoAux = segmentoAux->proximo;            
         }
         if(bestFit == NULL){
             printf("Sem espaco vazio disponivel\n");
             return NULL;
         }else{
-            addrAux = bestFit->addr;
-            bestFit->addr += tamanhoTotal+1;
+            addrAux = bestFit->addr;            
+            bestFit->addr += tamanhoTotal+5; //addr APONTA PARA O PRIMEIRO BYTE VÁLIDO DE MEMÓRIA ALOCADA, NÃO PARA O HEADER DO SEGMENTO.            
             bestFit->tamanho = bestFit->tamanho - tamanhoTotal;
-            //Removendo segmento da lista MemoriaLivre
+            
             return addrAux;
         }
     } 
@@ -176,7 +183,7 @@ MemoriaLivre::~MemoriaLivre(){
 }
 
 Segmento::~Segmento(){
-    printf("[SEGMENTO]\n");
+    printf("\t[SEGMENTO]\n");
     addr =  NULL;
     delete addr;
     proximo = NULL;
