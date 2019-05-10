@@ -212,6 +212,5 @@ meualoc::~meualoc(){
 	espacosVazios->~MemoriaLivre();
 	delete[] memoria;
 	politicaMem = -1;
-	printf("Objeto destruido!\n");
 }
 

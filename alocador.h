@@ -77,11 +77,12 @@ char* MemoriaLivre::buscar(unsigned short int tamanho, int politicaMemoria){
     //FIRST FIT
     if(politicaMemoria == 0){
         while(segmentoAux != NULL){
+            printf("[POLÍTICA DE ALOCAÇÃO: FIRST FIT]\n\tTamanho do segmento disponível para alocação: %d BYTES\n\tTamanho total solicitado: %d BYTES.\n\n", segmentoAux->tamanho, tamanhoTotal);
             if(segmentoAux->tamanho >= tamanhoTotal){
-                printf("[FIRST FIT] Memória disponível para alocação: %d\n", segmentoAux->tamanho);
                 addrAux = segmentoAux->addr;
                 segmentoAux->addr += tamanhoTotal+1;
                 segmentoAux->tamanho = segmentoAux->tamanho - tamanhoTotal;
+                printf("\t[FIRST FIT] Tamanho do segmento selecionado para alocação: %d\n", segmentoAux->tamanho);     
                 return addrAux;
             }else {
                 segmentoAux = segmentoAux->proximo;
@@ -99,16 +100,16 @@ char* MemoriaLivre::buscar(unsigned short int tamanho, int politicaMemoria){
 
         while(segmentoAux != NULL){
             //SegmentoAux possui espaço suficiente para alocar a quantidade de memória solicitada.
+            printf("[POLÍTICA DE ALOCAÇÃO: BEST FIT]\n\tTamanho do segmento disponível para alocação: %d BYTES\n\tTamanho total solicitado: %d BYTES.\n\n", segmentoAux->tamanho, tamanhoTotal);
             if(segmentoAux->tamanho >= tamanhoTotal){
                 //Na primeira iteração da busca, o primeiro segmento no qual o segmento requisitado couber, será considerado como a melhor opção para a alocação de memória.
                 if(bestFit == NULL){
-                    printf("\t[BEST FIT] NULL FIT COM %dBYTES.\n", segmentoAux->tamanho);
                     bestFit = segmentoAux;
                 }else{
                     //Após a primeira iteração da busca, se houver um espaço livre menor no qual a quantidade de memória solicitada couber, esse espaço será considerado como o best fit para a alocação.
                     if(segmentoAux->tamanho <= bestFit->tamanho){
                         bestFit = segmentoAux;
-                        printf("[BEST FIT] Tamanho do segmento selecionado para alocação: %d\n", bestFit->tamanho);
+                        printf("\t[BEST FIT] Tamanho do segmento selecionado para alocação: %d\n", bestFit->tamanho);
                         segmentoAnterior = segmentoBuffer;
                         segmentoAnterior->proximo = bestFit;
                     }
@@ -119,7 +120,7 @@ char* MemoriaLivre::buscar(unsigned short int tamanho, int politicaMemoria){
             segmentoAux = segmentoAux->proximo;            
         }
         if(bestFit == NULL){
-            printf("Sem espaco vazio disponivel\n");
+            printf("Sem espaço vazio disponivel\n");
             return NULL;
         }else{
             addrAux = bestFit->addr;            
@@ -167,7 +168,7 @@ void MemoriaLivre::join(MemoriaLivre* MemoriaLivre){
 MemoriaLivre::~MemoriaLivre(){
     Segmento* auxSeg;
 
-	printf("[MEMORIA LIVRE] Destruindo elemementos de MemoriaLivre.\n");
+	printf("[MEMORIA LIVRE] Destruindo elementos de MemoriaLivre.\n");
 	for(int i = 0; numSegmentos >0; i++){
 		printf("[DESTRUCTOR] Faltam %d elementos em MemoriaLivre.\n", numSegmentos);
 		auxSeg = primeiro;
@@ -183,7 +184,7 @@ MemoriaLivre::~MemoriaLivre(){
 }
 
 Segmento::~Segmento(){
-    printf("\t[SEGMENTO]\n");
+    printf("\n\t[SEGMENTO] Destruído!\n\n");
     addr =  NULL;
     delete addr;
     proximo = NULL;
